@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LogitechBatteryIndicator": {
+      "commandName": "Project",
+      "commandLineArgs": "--console"
+    }
+  }
+}

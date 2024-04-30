@@ -1,0 +1,166 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StartupObject>LogitechBatteryIndicator.Program</StartupObject>
+	<_SuppressWinFormsTrimError>true</_SuppressWinFormsTrimError>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="embeddeddlls\api-ms-win-core-console-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-console-l1-2-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-datetime-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-debug-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-errorhandling-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-file-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-file-l1-2-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-file-l2-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-handle-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-heap-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-interlocked-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-libraryloader-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-localization-l1-2-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-memory-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-namedpipe-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-processenvironment-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-processthreads-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-processthreads-l1-1-1.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-profile-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-rtlsupport-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-string-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-synch-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-synch-l1-2-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-sysinfo-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-timezone-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-core-util-l1-1-0.dll" />
+    <None Remove="embeddeddlls\API-MS-Win-core-xstate-l2-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-conio-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-convert-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-environment-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-filesystem-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-heap-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-locale-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-math-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-multibyte-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-private-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-process-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-runtime-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-stdio-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-string-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-time-l1-1-0.dll" />
+    <None Remove="embeddeddlls\api-ms-win-crt-utility-l1-1-0.dll" />
+    <None Remove="embeddeddlls\concrt140.dll" />
+    <None Remove="embeddeddlls\logi_nethidppio.dll" />
+    <None Remove="embeddeddlls\msvcp140.dll" />
+    <None Remove="embeddeddlls\msvcp140_1.dll" />
+    <None Remove="embeddeddlls\msvcp140_2.dll" />
+    <None Remove="embeddeddlls\msvcp140_codecvt_ids.dll" />
+    <None Remove="embeddeddlls\ucrtbase.dll" />
+    <None Remove="embeddeddlls\vcruntime140.dll" />
+    <None Remove="resources\battery_default.ico" />
+    <None Remove="resources\battery_default1.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-console-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-console-l1-2-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-datetime-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-debug-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-errorhandling-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-file-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-file-l1-2-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-file-l2-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-handle-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-heap-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-interlocked-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-libraryloader-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-localization-l1-2-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-memory-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-namedpipe-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-processenvironment-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-processthreads-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-processthreads-l1-1-1.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-profile-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-rtlsupport-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-string-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-synch-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-synch-l1-2-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-sysinfo-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-timezone-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-core-util-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\API-MS-Win-core-xstate-l2-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-conio-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-convert-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-environment-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-filesystem-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-heap-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-locale-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-math-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-multibyte-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-private-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-process-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-runtime-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-stdio-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-string-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-time-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-utility-l1-1-0.dll" />
+    <EmbeddedResource Include="embeddeddlls\concrt140.dll" />
+    <EmbeddedResource Include="embeddeddlls\logi_nethidppio.dll" />
+    <EmbeddedResource Include="embeddeddlls\msvcp140.dll" />
+    <EmbeddedResource Include="embeddeddlls\msvcp140_1.dll" />
+    <EmbeddedResource Include="embeddeddlls\msvcp140_2.dll" />
+    <EmbeddedResource Include="embeddeddlls\msvcp140_codecvt_ids.dll" />
+    <EmbeddedResource Include="embeddeddlls\ucrtbase.dll" />
+    <EmbeddedResource Include="embeddeddlls\vcruntime140.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="logi_nethidppio">
+      <HintPath>embeddeddlls\logi_nethidppio.dll</HintPath>
+      <EmbedInteropTypes></EmbedInteropTypes>
+      <SpecificVersion></SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="resources\battery_default.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\battery_default1.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
