@@ -1,8 +1,6 @@
 using LogitechBatteryIndicator.components;
 using LogitechBatteryIndicator.controller;
 using LogitechBatteryIndicator.helpers;
-using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -15,6 +13,12 @@ namespace LogitechBatteryIndicator
         [return: MarshalAs(UnmanagedType.Bool)]
         private static partial bool AllocConsole();
 
+        static void ExitHandler()
+        {
+            DeviceEngine.Instance.Dispose();
+            TrayIcon.Instance.Dispose();
+        }
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -22,10 +26,8 @@ namespace LogitechBatteryIndicator
         static void Main(string[] args)
         {
             bool startMinimized = false;
-            bool useConsole = false;
             if (args.Contains("--console"))
             {
-                useConsole = true;
                 AllocConsole();
             }
             if (args.Contains("--start-minimized"))
@@ -35,7 +37,6 @@ namespace LogitechBatteryIndicator
 
             Assembly executingAssembly = Assembly.GetExecutingAssembly();
             Process currentProcess = Process.GetCurrentProcess();
-            var productName = currentProcess.MainModule?.FileVersionInfo.ProductName;
             var name = executingAssembly.GetName().Name ?? string.Empty;
 
             using (new Mutex(true, "Global\\" + name, out bool createdNew))
@@ -68,8 +69,7 @@ namespace LogitechBatteryIndicator
                         catch (Exception ex) { Console.Error.WriteLine(ex); }
                     };
                     Application.Run(form);
-                    DeviceEngine.Instance.Dispose();
-                    TrayIcon.Instance.Dispose();
+                    ExitHandler();
                 }
             }
         }
