@@ -9,6 +9,8 @@ namespace LogitechBatteryIndicator.controller
     {
         private readonly List<IMouseUpdateListener> mouseUpdateListeners = [TrayIcon.Instance];
 
+        private static CancellationTokenSource? debounceCancellationToken = null;
+
         public static DeviceEngine Instance { get; } = new DeviceEngine();
         private readonly List<HidppDevice> devices = [];
         private readonly List<Mouse> mices = [];
@@ -33,13 +35,13 @@ namespace LogitechBatteryIndicator.controller
             deviceProviderInstance.DeviceAdded += OnDeviceAdded;
             deviceProviderInstance.DeviceRemoved += OnDeviceRemoved;
             deviceProviderInstance.Start();
-            Task.Delay(500).ContinueWith(_ =>
+            Task.Delay(1000).ContinueWith(_ =>
             {
                 if (selectedMouse is null)
                 {
                     var m_devices = deviceProviderInstance.GetType().GetField("m_devices", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?
                         .GetValue(deviceProviderInstance) as Dictionary<string, HidppDevice> ?? [];
-                    foreach(var m_device in m_devices.Values)
+                    foreach (var m_device in m_devices.Values)
                     {
                         OnDeviceAdded(m_device);
                     }
@@ -55,6 +57,7 @@ namespace LogitechBatteryIndicator.controller
             {
                 devices.Add(dev);
             }
+            dev.ConnectionChanged += onConnectionChangedListener;
             if (dev.DeviceType is HidppDeviceType.MOUSE)
             {
                 var mouse = new Mouse(dev);
@@ -73,6 +76,7 @@ namespace LogitechBatteryIndicator.controller
             {
                 devices.RemoveAll(d => d.Id == dev.Id);
             }
+            dev.ConnectionChanged -= onConnectionChangedListener;
             if (mouse is not null)
             {
                 Task.Factory.StartNew(async () => { await OnMouseRemoved(mouse); });
@@ -85,7 +89,7 @@ namespace LogitechBatteryIndicator.controller
             {
                 mices.RemoveAll(_m => _m.handle.Id == m.handle.Id);
             }
-            Console.WriteLine("Disconnected {0}", m.Name);
+            Console.WriteLine("Removed {0}", m.Name);
             await OnConnectionChanged();
         }
 
@@ -98,7 +102,7 @@ namespace LogitechBatteryIndicator.controller
             if (m.handle.IsConnected)
             {
                 await m.LoadInfo();
-                Console.WriteLine("Connected {0}", m.Name);
+                Console.WriteLine("Added {0} connected {1}", m.Name, m.handle.IsConnected);
                 await OnConnectionChanged();
             }
         }
@@ -107,6 +111,7 @@ namespace LogitechBatteryIndicator.controller
         {
             async Task action()
             {
+                Console.WriteLine("Invoke");
                 Mouse? newMouse;
                 bool lostSelectedMouse;
                 lock (mices)
@@ -119,7 +124,8 @@ namespace LogitechBatteryIndicator.controller
                     await SetSelectedMouse(newMouse);
                 }
             }
-            await Debounce(action, 500).Invoke();
+            Console.WriteLine("Call");
+            await Debounce(action, 1000);
         }
 
         private async Task SetSelectedMouse(Mouse? m)
@@ -127,14 +133,12 @@ namespace LogitechBatteryIndicator.controller
             if (selectedMouse is not null)
             {
                 await selectedMouse.UnsubscribeToBatteryEvents();
-                selectedMouse.handle.ConnectionChanged -= onConnectionChangedListener;
                 if (m is not null) Console.WriteLine("Swapped {0}", m.Name);
             }
             selectedMouse = m;
             MouseUpdate?.Invoke(this, new MouseUpdateEvent(selectedMouse));
             if (selectedMouse is not null)
             {
-                selectedMouse.handle.ConnectionChanged += onConnectionChangedListener;
                 _ = selectedMouse.SubscribeToBatteryEvents();
             }
         }
@@ -144,24 +148,20 @@ namespace LogitechBatteryIndicator.controller
             deviceProviderInstance?.Dispose();
         }
 
-        public static Func<Task> Debounce<T>(Func<T> func, int milliseconds = 300)
+        private static async Task Debounce(Func<Task> method, int milliseconds = 300)
         {
-            CancellationTokenSource? cancelTokenSource = null;
+            debounceCancellationToken?.Cancel();
+            debounceCancellationToken?.Dispose();
 
-            return () =>
+            debounceCancellationToken = new CancellationTokenSource();
+
+            await Task.Delay(milliseconds, debounceCancellationToken.Token).ContinueWith(t =>
             {
-                cancelTokenSource?.Cancel();
-                cancelTokenSource = new CancellationTokenSource();
-
-                return Task.Delay(milliseconds, cancelTokenSource.Token)
-                    .ContinueWith(t =>
-                    {
-                        if (t.IsCompletedSuccessfully)
-                        {
-                            func();
-                        }
-                    }, TaskScheduler.Default);
-            };
+                if (t.IsCompletedSuccessfully)
+                {
+                    method();
+                }
+            });
         }
     }
 }
