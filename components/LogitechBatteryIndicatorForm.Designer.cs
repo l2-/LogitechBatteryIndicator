@@ -39,7 +39,6 @@ namespace LogitechBatteryIndicator
             BackColor = SystemColors.ControlDarkDark;
             ClientSize = new Size(584, 321);
             Name = "LogitechBatteryIndicator";
-            Text = "Logitech battery indicator";
             Load += LogitechBatteryIndicator_Load;
             ResumeLayout(false);
         }

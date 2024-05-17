@@ -9,9 +9,9 @@ namespace LogitechBatteryIndicator.controller
         private readonly List<IMouseUpdateListener> mouseUpdateListeners = [TrayIcon.Instance];
 
         public static DeviceEngine Instance { get; } = new DeviceEngine();
-        private readonly List<HidppDevice> devices = new();
-        private readonly List<Mouse> mices = new();
-        private readonly HidppDeviceProvider deviceProviderInstance = new HidppDeviceProvider();
+        private readonly List<HidppDevice> devices = [];
+        private readonly List<Mouse> mices = [];
+        private HidppDeviceProvider? deviceProviderInstance;
         private Mouse? selectedMouse;
         private bool isInit = false;
 
@@ -28,6 +28,7 @@ namespace LogitechBatteryIndicator.controller
             if (!isInit) { isInit = true; } else return;
             Console.WriteLine("Init logitech device engine");
             devices.Clear();
+            deviceProviderInstance ??= new HidppDeviceProvider();
             deviceProviderInstance.DeviceAdded += (dev) =>
             {
                 devices.Add(dev);
@@ -102,7 +103,7 @@ namespace LogitechBatteryIndicator.controller
 
         public void Dispose()
         {
-            deviceProviderInstance.Dispose();
+            deviceProviderInstance?.Dispose();
         }
 
         public static Func<Task> Debounce<T>(Func<T> func, int milliseconds = 300)

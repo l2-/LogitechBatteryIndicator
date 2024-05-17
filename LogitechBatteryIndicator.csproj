@@ -8,6 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <StartupObject>LogitechBatteryIndicator.Program</StartupObject>
 	<_SuppressWinFormsTrimError>true</_SuppressWinFormsTrimError>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,24 +1,49 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows;
 
 namespace LogitechBatteryIndicator.helpers
 {
-    internal class WindowHelpers
+    internal partial class WindowHelpers
     {
-        [DllImport("user32.dll")]
+        [LibraryImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool ShowWindow(IntPtr hWnd, WindowHelpers.ShowWindowEnum flags);
+        private static partial bool ShowWindow(IntPtr hWnd, ShowWindowEnum flags);
+        [LibraryImport("user32.dll", SetLastError = true)]
 
-        [DllImport("user32.dll")]
-        private static extern int SetForegroundWindow(IntPtr hwnd);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static partial bool IsWindowVisible(IntPtr hWnd);
 
-        public static bool BringMainWindowToFront(Process bProcess)
+        [LibraryImport("user32.dll", SetLastError = true)]
+        private static partial int SetForegroundWindow(IntPtr hwnd);
+
+        [LibraryImport("user32.dll")]
+        private static partial IntPtr FindWindowA([MarshalAs(UnmanagedType.LPStr)] string? lpClassName, [MarshalAs(UnmanagedType.LPStr)] string? lpWindowName);
+
+        [LibraryImport("kernel32.dll")]
+        public static partial uint GetLastError();
+
+        [LibraryImport("kernel32.dll")]
+        public static partial void SetLastError(uint err);
+
+        public static IntPtr WindowHandle(string title)
         {
-            if (bProcess.MainWindowHandle == IntPtr.Zero)
-                WindowHelpers.ShowWindow(bProcess.Handle, WindowHelpers.ShowWindowEnum.Restore);
-            return WindowHelpers.SetForegroundWindow(bProcess.MainWindowHandle) > 0;
+            return FindWindowA(null, title);
+        }
+
+        public static void RestoreWindow(IntPtr windowHandle)
+        {
+            ShowWindow(windowHandle, ShowWindowEnum.Restore);
+        }
+
+        public static bool BringMainWindowToFront(IntPtr windowHandle)
+        {
+            return SetForegroundWindow(windowHandle) > 0;
+        }
+
+        public static bool BringMainWindowToFront(string windowTitle)
+        {
+            var windowHandle = WindowHandle(windowTitle);
+            return BringMainWindowToFront(windowHandle);
         }
 
         private enum ShowWindowEnum
@@ -27,7 +52,6 @@ namespace LogitechBatteryIndicator.helpers
             ShowNormal = 1,
             ShowMinimized = 2,
             Maximize = 3,
-            ShowMaximized = 3,
             ShowNormalNoActivate = 4,
             Show = 5,
             Minimize = 6,

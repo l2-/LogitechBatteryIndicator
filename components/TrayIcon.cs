@@ -21,6 +21,7 @@ namespace LogitechBatteryIndicator.components
 
         private Bitmap IconBitmap { get; set; }
         private Icon Icon { get => Icon.FromHandle(IconBitmap.GetHicon()); }
+        public bool IsVisible { get => notifyIcon.Visible; set => notifyIcon.Visible = value; }
 
         private TrayIcon()
         {
@@ -33,7 +34,7 @@ namespace LogitechBatteryIndicator.components
 
             Icon icon = Icon;
             notifyIcon.Icon = icon;
-            notifyIcon.Visible = true;
+            notifyIcon.Visible = false;
         }
 
         public void DrawIcon(int percentage)

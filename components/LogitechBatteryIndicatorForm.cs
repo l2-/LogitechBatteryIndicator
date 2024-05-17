@@ -1,6 +1,5 @@
 using LogitechBatteryIndicator.components;
 using LogitechBatteryIndicator.models;
-using Label = System.Windows.Forms.Label;
 
 namespace LogitechBatteryIndicator
 {
@@ -9,11 +8,13 @@ namespace LogitechBatteryIndicator
         public static LogitechBatteryIndicator Instance { get; } = new LogitechBatteryIndicator();
         private readonly List<IBatteryUpdateListener> batteryUpdateListeners = [BatteryStatusLabel.Instance, BatteryIcon.Instance, TrayIcon.Instance];
         public bool StartMinimized { get; set; }
+        public readonly string Title = "Logitech battery indicator";
 
         private LogitechBatteryIndicator()
         {
             Icon = Properties.Resources.battery_default;
             InitializeComponent();
+            Text = Title;
             Resize += OnResized;
             Load += OnLoad;
         }
@@ -32,6 +33,11 @@ namespace LogitechBatteryIndicator
             {
                 Hide();
                 ShowInTaskbar = false;
+            }
+            else
+            {
+                Show();
+                ShowInTaskbar = true;
             }
         }
 
@@ -58,6 +64,8 @@ namespace LogitechBatteryIndicator
             var toggleStartupControl = ToggleStartupControl.Instance;
             toggleStartupControl.Anchor = AnchorStyles.Top;
             panel.Controls.Add(toggleStartupControl);
+
+            TrayIcon.Instance.IsVisible = true;
         }
 
         public void RegisterBatteryUpdateListeners(ref EventHandler<BatteryUpdateEvent>? eventHandler)

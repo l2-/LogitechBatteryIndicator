@@ -81,7 +81,7 @@ namespace LogitechBatteryIndicator.models
 
         public static BatteryUpdateEvent EventFromF1000Broadcast(Feature1000.BatteryLevelStatus info)
         {
-            var state = info.battery_status == null ? BatteryMode.Discharging : BatteryMode.Charging;
+            var state = BatteryMode.Discharging;
             int batteryDischargeLevel = info.battery_discharge_level;
             var percent = batteryDischargeLevel;
             return new BatteryUpdateEvent(percent, state);
