@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Security.Cryptography;
 
 namespace LogitechBatteryIndicator.helpers
 {
     public sealed class AssemblyLoader : IDisposable
     {
-        private static readonly IList<string> _logiNethidppioDependentAssemblies = (IList<string>)new ReadOnlyCollection<string>((IList<string>)
+        private static readonly IList<string> _logiNethidppioDependentAssemblies = new ReadOnlyCollection<string>(
         [
             "api-ms-win-core-console-l1-1-0.dll",
             "api-ms-win-core-console-l1-2-0.dll",
@@ -63,106 +58,116 @@ namespace LogitechBatteryIndicator.helpers
             "ucrtbase.dll",
             "vcruntime140.dll"
         ]);
-        private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();
+        private readonly Dictionary<string, Assembly> _assemblies = [];
         private readonly string assemblyCacheDir;
 
         public AssemblyLoader(string assemblyCacheDir)
         {
             this.assemblyCacheDir = assemblyCacheDir;
-            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(this.CurrentDomain_AssemblyResolve);
+            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
         }
 
         public void Dispose()
         {
-            AppDomain.CurrentDomain.AssemblyResolve -= new ResolveEventHandler(this.CurrentDomain_AssemblyResolve);
-            GC.SuppressFinalize((object)this);
+            AppDomain.CurrentDomain.AssemblyResolve -= new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+            GC.SuppressFinalize(this);
         }
 
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        private Assembly? CurrentDomain_AssemblyResolve(object? sender, ResolveEventArgs args)
         {
-            if (this._assemblies.ContainsKey(args.Name))
-                return this._assemblies[args.Name];
-            string name1 = string.Empty;
-            string name2 = new AssemblyName(args.Name).Name;
-            if (name2 == this.GetType().Assembly.GetName().Name + ".resources")
+            if (_assemblies.TryGetValue(args.Name, out Assembly? value))
             {
-                string cultureName = new AssemblyName(args.Name).CultureName;
+                return value;
+            }
+            var name1 = string.Empty;
+            var name2 = new AssemblyName(args.Name).Name;
+            if (name2 == GetType().Assembly.GetName().Name + ".resources")
+            {
+                var cultureName = new AssemblyName(args.Name).CultureName;
                 if (!string.IsNullOrEmpty(cultureName))
-                    name1 = string.Format("{0}.embeddeddlls.Resources_{1}.dll", (object)Assembly.GetExecutingAssembly().GetName().Name, (object)cultureName);
+                    name1 = string.Format("{0}.embeddeddlls.Resources_{1}.dll", Assembly.GetExecutingAssembly().GetName().Name, cultureName);
             }
             if (string.IsNullOrEmpty(name1))
-                name1 = string.Format("{0}.embeddeddlls.{1}.dll", (object)Assembly.GetExecutingAssembly().GetName().Name, (object)name2);
-            if (name2 == "logi_nethidppio")
-                this.extractResourceAssemblies(AssemblyLoader._logiNethidppioDependentAssemblies);
-            using (Stream manifestResourceStream = this.GetType().Assembly.GetManifestResourceStream(name1))
             {
-                if (manifestResourceStream == null)
-                    return (Assembly)null;
-                byte[] numArray = new byte[manifestResourceStream.Length];
-                manifestResourceStream.Read(numArray, 0, numArray.Length);
-                Assembly assembly = (Assembly)null;
-                try
+                name1 = string.Format("{0}.embeddeddlls.{1}.dll", Assembly.GetExecutingAssembly().GetName().Name, name2);
+            }
+            if (name2 == "logi_nethidppio")
+            {
+                ExtractResourceAssemblies(_logiNethidppioDependentAssemblies);
+            }
+            using var manifestResourceStream = GetType().Assembly.GetManifestResourceStream(name1);
+            if (manifestResourceStream == null)
+            {
+                return null;
+            }
+            byte[] numArray = new byte[manifestResourceStream.Length];
+            manifestResourceStream.Read(numArray, 0, numArray.Length);
+            Assembly? assembly = null;
+            try
+            {
+                assembly = Assembly.Load(numArray);
+            }
+            catch
+            {
+                if (!Directory.Exists(assemblyCacheDir))
                 {
-                    assembly = Assembly.Load(numArray);
+                    Directory.CreateDirectory(assemblyCacheDir);
                 }
-                catch
+                string str1 = Path.Combine(assemblyCacheDir, new AssemblyName(args.Name).Name + ".dll");
+                bool flag = true;
+                string str2 = BitConverter.ToString(SHA1.HashData(numArray)).Replace("-", string.Empty);
+                if (File.Exists(str1))
                 {
-                    if (!Directory.Exists(this.assemblyCacheDir))
-                        Directory.CreateDirectory(this.assemblyCacheDir);
-                    string str1 = Path.Combine(this.assemblyCacheDir, new AssemblyName(args.Name).Name + ".dll");
-                    bool flag = true;
-                    using (SHA1CryptoServiceProvider cryptoServiceProvider = new SHA1CryptoServiceProvider())
+                    byte[] buffer = File.ReadAllBytes(str1);
+                    string str3 = BitConverter.ToString(SHA1.HashData(buffer)).Replace("-", string.Empty);
+                    if (str2 == str3)
                     {
-                        string str2 = BitConverter.ToString(cryptoServiceProvider.ComputeHash(numArray)).Replace("-", string.Empty);
-                        if (File.Exists(str1))
-                        {
-                            byte[] buffer = File.ReadAllBytes(str1);
-                            string str3 = BitConverter.ToString(cryptoServiceProvider.ComputeHash(buffer)).Replace("-", string.Empty);
-                            if (str2 == str3)
-                                flag = false;
-                        }
-                        if (flag)
-                            File.WriteAllBytes(str1, numArray);
-                        assembly = Assembly.LoadFrom(str1);
+                        flag = false;
                     }
                 }
-                this._assemblies[args.Name] = assembly;
-                return assembly;
+                if (flag)
+                {
+                    File.WriteAllBytes(str1, numArray);
+                }
+                assembly = Assembly.LoadFrom(str1);
             }
+            _assemblies[args.Name] = assembly;
+            return assembly;
         }
 
-        private void extractResourceAssemblies(IList<string> resources)
+        private void ExtractResourceAssemblies(IList<string> resources)
         {
-            if (!Directory.Exists(this.assemblyCacheDir))
-                Directory.CreateDirectory(this.assemblyCacheDir);
+            if (!Directory.Exists(assemblyCacheDir))
+            {
+                Directory.CreateDirectory(assemblyCacheDir);
+            }
             foreach (string resource in (IEnumerable<string>)resources)
             {
-                string name = string.Format("{0}.embeddeddlls.{1}", (object)Assembly.GetExecutingAssembly().GetName().Name, (object)resource);
-                using (Stream manifestResourceStream = this.GetType().Assembly.GetManifestResourceStream(name))
+                string name = string.Format("{0}.embeddeddlls.{1}", Assembly.GetExecutingAssembly().GetName().Name, resource);
+                using var manifestResourceStream = GetType().Assembly.GetManifestResourceStream(name);
+                if (manifestResourceStream == null)
                 {
-                    if (manifestResourceStream == null)
+                    Console.WriteLine("Failed to find resource assembly with name {0}", name);
+                }
+                else
+                {
+                    byte[] numArray = new byte[manifestResourceStream.Length];
+                    manifestResourceStream.Read(numArray, 0, numArray.Length);
+                    string path = Path.Combine(assemblyCacheDir, resource);
+                    bool flag = true;
+                    string str1 = BitConverter.ToString(SHA1.HashData(numArray)).Replace("-", string.Empty);
+                    if (File.Exists(path))
                     {
-                        Console.WriteLine("Failed to find resource assembly with name {0}", (object)name);
-                    }
-                    else
-                    {
-                        byte[] numArray = new byte[manifestResourceStream.Length];
-                        manifestResourceStream.Read(numArray, 0, numArray.Length);
-                        string path = Path.Combine(this.assemblyCacheDir, resource);
-                        bool flag = true;
-                        using (SHA1CryptoServiceProvider cryptoServiceProvider = new SHA1CryptoServiceProvider())
+                        byte[] buffer = File.ReadAllBytes(path);
+                        string str2 = BitConverter.ToString(SHA1.HashData(buffer)).Replace("-", string.Empty);
+                        if (str1 == str2)
                         {
-                            string str1 = BitConverter.ToString(cryptoServiceProvider.ComputeHash(numArray)).Replace("-", string.Empty);
-                            if (File.Exists(path))
-                            {
-                                byte[] buffer = File.ReadAllBytes(path);
-                                string str2 = BitConverter.ToString(cryptoServiceProvider.ComputeHash(buffer)).Replace("-", string.Empty);
-                                if (str1 == str2)
-                                    flag = false;
-                            }
-                            if (flag)
-                                File.WriteAllBytes(path, numArray);
+                            flag = false;
                         }
+                    }
+                    if (flag)
+                    {
+                        File.WriteAllBytes(path, numArray);
                     }
                 }
             }

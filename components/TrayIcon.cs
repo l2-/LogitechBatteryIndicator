@@ -55,7 +55,8 @@ namespace LogitechBatteryIndicator.components
             var metrics = TextRenderer.MeasureText(text, font);
             var text_x = batteryWidth / 2 - metrics.Width / 2 + 1;
             var text_y = batteryHeight / 2 - metrics.Height / 2 - 1;
-            g.DrawString(text, font, new SolidBrush(Color.Black), new Point(text_x, text_y));
+            g.DrawString(text, font, new SolidBrush(Color.Black), new Point(text_x + 1, text_y + 1));
+            g.DrawString(text, font, new SolidBrush(Color.White), new Point(text_x, text_y));
         }
 
         void NotifyIconMouseDoubleClick(object? sender, MouseEventArgs e)

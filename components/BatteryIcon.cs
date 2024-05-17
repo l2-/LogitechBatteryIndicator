@@ -39,7 +39,7 @@ namespace LogitechBatteryIndicator.components
 
         public void DrawIcon(int percentage)
         {
-            var action = () =>
+            void action()
             {
                 IconBitmap = new Bitmap(DefaultIcon.Width, DefaultIcon.Height);
                 using (Graphics g = Graphics.FromImage(IconBitmap))
@@ -96,10 +96,10 @@ namespace LogitechBatteryIndicator.components
                 }
 
                 Invalidate();
-            };
+            }
             if (SynchronizationContext.Current is not null)
             {
-                action.Invoke();
+                action();
             }
             else
             {
