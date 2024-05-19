@@ -35,7 +35,7 @@ namespace LogitechBatteryIndicator.controller
             deviceProviderInstance.DeviceAdded += OnDeviceAdded;
             deviceProviderInstance.DeviceRemoved += OnDeviceRemoved;
             deviceProviderInstance.Start();
-            Task.Delay(1000).ContinueWith(_ =>
+            Task.Delay(2500).ContinueWith(_ =>
             {
                 if (selectedMouse is null)
                 {
@@ -111,7 +111,6 @@ namespace LogitechBatteryIndicator.controller
         {
             async Task action()
             {
-                Console.WriteLine("Invoke");
                 Mouse? newMouse;
                 bool lostSelectedMouse;
                 lock (mices)
@@ -124,7 +123,6 @@ namespace LogitechBatteryIndicator.controller
                     await SetSelectedMouse(newMouse);
                 }
             }
-            Console.WriteLine("Call");
             await Debounce(action, 1000);
         }
 

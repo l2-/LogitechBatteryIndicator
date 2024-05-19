@@ -6,6 +6,8 @@ namespace LogitechBatteryIndicator.helpers
 {
     public sealed class AssemblyLoader : IDisposable
     {
+        // All of the dll files below should already be present on a normal windows install.
+        // However this also gives the ability to bundle them just in case.
         private static readonly IList<string> _logiNethidppioDependentAssemblies = new ReadOnlyCollection<string>(
         [
             "api-ms-win-core-console-l1-1-0.dll",

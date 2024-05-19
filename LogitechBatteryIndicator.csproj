@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
     <None Remove="embeddeddlls\api-ms-win-core-console-l1-1-0.dll" />
     <None Remove="embeddeddlls\api-ms-win-core-console-l1-2-0.dll" />
     <None Remove="embeddeddlls\api-ms-win-core-datetime-l1-1-0.dll" />
@@ -56,13 +57,14 @@
     <None Remove="embeddeddlls\api-ms-win-crt-time-l1-1-0.dll" />
     <None Remove="embeddeddlls\api-ms-win-crt-utility-l1-1-0.dll" />
     <None Remove="embeddeddlls\concrt140.dll" />
-    <None Remove="embeddeddlls\logi_nethidppio.dll" />
     <None Remove="embeddeddlls\msvcp140.dll" />
     <None Remove="embeddeddlls\msvcp140_1.dll" />
     <None Remove="embeddeddlls\msvcp140_2.dll" />
     <None Remove="embeddeddlls\msvcp140_codecvt_ids.dll" />
     <None Remove="embeddeddlls\ucrtbase.dll" />
     <None Remove="embeddeddlls\vcruntime140.dll" />
+    -->
+    <None Remove="embeddeddlls\logi_nethidppio.dll" />
     <None Remove="resources\battery_default.ico" />
     <None Remove="resources\battery_default1.ico" />
   </ItemGroup>
@@ -80,6 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!--
     <EmbeddedResource Include="embeddeddlls\api-ms-win-core-console-l1-1-0.dll" />
     <EmbeddedResource Include="embeddeddlls\api-ms-win-core-console-l1-2-0.dll" />
     <EmbeddedResource Include="embeddeddlls\api-ms-win-core-datetime-l1-1-0.dll" />
@@ -123,13 +126,14 @@
     <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-time-l1-1-0.dll" />
     <EmbeddedResource Include="embeddeddlls\api-ms-win-crt-utility-l1-1-0.dll" />
     <EmbeddedResource Include="embeddeddlls\concrt140.dll" />
-    <EmbeddedResource Include="embeddeddlls\logi_nethidppio.dll" />
     <EmbeddedResource Include="embeddeddlls\msvcp140.dll" />
     <EmbeddedResource Include="embeddeddlls\msvcp140_1.dll" />
     <EmbeddedResource Include="embeddeddlls\msvcp140_2.dll" />
     <EmbeddedResource Include="embeddeddlls\msvcp140_codecvt_ids.dll" />
     <EmbeddedResource Include="embeddeddlls\ucrtbase.dll" />
     <EmbeddedResource Include="embeddeddlls\vcruntime140.dll" />
+    -->
+    <EmbeddedResource Include="embeddeddlls\logi_nethidppio.dll" />
   </ItemGroup>
 
   <ItemGroup>
