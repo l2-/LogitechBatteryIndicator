@@ -102,7 +102,7 @@ namespace LogitechBatteryIndicator.controller
             if (m.handle.IsConnected)
             {
                 await m.LoadInfo();
-                Console.WriteLine("Added {0} connected {1}", m.Name, m.handle.IsConnected);
+                Console.WriteLine("Added {0}", m.Name);
                 await OnConnectionChanged();
             }
         }

@@ -9,9 +9,9 @@ namespace LogitechBatteryIndicator.models
 {
     internal class MouseProductId
     {
-        public static string GetDeviceNameOverride(ulong ProductId)
+        public static string GetDeviceNameOverride(long ProductId)
         {
-            return ProductId switch
+            return (ulong)ProductId switch
             {
                 4642302164515946496 => "G603",
                 4644337115725824000 => "G305",

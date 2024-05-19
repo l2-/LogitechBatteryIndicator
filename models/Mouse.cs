@@ -9,7 +9,7 @@ namespace LogitechBatteryIndicator.models
         public HidppDevice handle = device;
 
         public Version? ProtocolVersion { get; private set; }
-        public ulong ProductId { get; private set; }
+        public long ProductId { get; private set; }
         public string Name { get; private set; } = string.Empty;
 
         private Action<Feature1004.BatteryStatus>? batteryStatusBroadcastListener;
@@ -23,12 +23,12 @@ namespace LogitechBatteryIndicator.models
                 ProtocolVersion = await handle.ProtocolVersion;
                 if (ProtocolVersion.Major >= 2)
                 {
-                    ProductId = (ulong)(await handle.GetFeature<Feature0003>().GetDeviceInfo()).model_id;
+                    ProductId = (await handle.GetFeature<Feature0003>().GetDeviceInfo()).model_id;
                     Name = await handle.GetFeature<Feature0005>().GetDeviceName();
                 }
                 else
                 {
-                    ProductId = handle.ProductId;
+                    ProductId = (long)handle.ProductId;
                 }
 
                 if (Name.Equals(string.Empty))
@@ -36,6 +36,7 @@ namespace LogitechBatteryIndicator.models
                     Name = MouseProductId.GetDeviceNameOverride(ProductId);
                 }
             }
+            catch (TimeoutException) { }
             catch (Exception ex)
             {
                 Console.WriteLine("{0} {1}", handle.Id, ex);
@@ -91,7 +92,11 @@ namespace LogitechBatteryIndicator.models
                     DeviceEngine.Instance.BatteryUpdate?.Invoke(this, Battery.EventFromF1000Broadcast(batteryLevelStatus));
                 }
             }
-            catch (Exception ex) { Console.WriteLine("{0} {1}", handle.Id, ex); }
+            catch (TimeoutException) { }
+            catch (Exception ex) 
+            { 
+                Console.WriteLine("{0} {1}", handle.Id, ex); 
+            }
         }
 
         public async Task UnsubscribeToBatteryEvents()

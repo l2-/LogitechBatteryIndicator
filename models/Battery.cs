@@ -11,7 +11,7 @@ namespace LogitechBatteryIndicator.models
             return new BatteryUpdateEvent(stateOfCharge, state);
         }
 
-        public static BatteryUpdateEvent EventFromF1001Broadcast(Feature1001.BatteryInfo info, ulong productId)
+        public static BatteryUpdateEvent EventFromF1001Broadcast(Feature1001.BatteryInfo info, long productId)
         {
             var state = info.ext_power ? BatteryMode.Charging : BatteryMode.Discharging;
             int percent;
@@ -41,6 +41,7 @@ namespace LogitechBatteryIndicator.models
                     case 49281:
                     case 49282:
                     case 49287:
+                    case 4645956180957462528:
                     case 4649896869286117376:
                         num1 = 3.632f;
                         num2 = 2837.09f;

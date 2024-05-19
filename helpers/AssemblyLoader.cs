@@ -147,11 +147,7 @@ namespace LogitechBatteryIndicator.helpers
             {
                 string name = string.Format("{0}.embeddeddlls.{1}", Assembly.GetExecutingAssembly().GetName().Name, resource);
                 using var manifestResourceStream = GetType().Assembly.GetManifestResourceStream(name);
-                if (manifestResourceStream == null)
-                {
-                    Console.WriteLine("Failed to find resource assembly with name {0}", name);
-                }
-                else
+                if (manifestResourceStream is not null)
                 {
                     byte[] numArray = new byte[manifestResourceStream.Length];
                     manifestResourceStream.Read(numArray, 0, numArray.Length);
@@ -172,6 +168,12 @@ namespace LogitechBatteryIndicator.helpers
                         File.WriteAllBytes(path, numArray);
                     }
                 }
+#if DEBUG
+                else
+                {
+                    Console.WriteLine("Failed to find resource assembly with name {0}", resource);
+                }
+#endif
             }
         }
     }
