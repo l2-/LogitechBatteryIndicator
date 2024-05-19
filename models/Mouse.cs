@@ -9,8 +9,8 @@ namespace LogitechBatteryIndicator.models
         public HidppDevice handle = device;
 
         public Version? ProtocolVersion { get; private set; }
-        public long ProductId { get; private set; }
-        public string Name { get; private set; } = String.Empty;
+        public ulong ProductId { get; private set; }
+        public string Name { get; private set; } = string.Empty;
 
         private Action<Feature1004.BatteryStatus>? batteryStatusBroadcastListener;
         private Action<Feature1001.BatteryInfo>? batteryInfoBroadcastListener;
@@ -23,13 +23,18 @@ namespace LogitechBatteryIndicator.models
                 ProtocolVersion = await handle.ProtocolVersion;
                 if (ProtocolVersion.Major >= 2)
                 {
-                    ProductId = (await handle.GetFeature<Feature0003>().GetDeviceInfo()).model_id;
+                    ProductId = (ulong)(await handle.GetFeature<Feature0003>().GetDeviceInfo()).model_id;
+                    Name = await handle.GetFeature<Feature0005>().GetDeviceName();
                 }
                 else
                 {
                     ProductId = handle.ProductId;
                 }
-                Name = MouseProductId.GetDeviceNameOverride(ProductId);
+
+                if (Name.Equals(string.Empty))
+                {
+                    Name = MouseProductId.GetDeviceNameOverride(ProductId);
+                }
             }
             catch (Exception ex)
             {
